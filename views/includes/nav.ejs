@@ -1,0 +1,95 @@
+<nav class="sticky top-0 z-50 shadow-md">
+    <div class="bg-[#1E3A5F] text-white">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
+            <a href="/" class="shrink-0 text-2xl font-bold tracking-tight">
+                booksHeaven<span class="text-[#C47A22]">.</span>
+            </a>
+            <div class="hidden items-center gap-7 text-sm font-semibold md:flex lg:gap-9 lg:text-base">
+                <a href="/" class="transition duration-200 hover:text-[#E6B66A]">Home</a>
+                <a href="/books" class="transition duration-200 hover:text-[#E6B66A]">Books</a>
+                <a href="/category" class="transition duration-200 hover:text-[#E6B66A]">Categories</a>
+                <a href="/about" class="transition duration-200 hover:text-[#E6B66A]">About</a>
+                <a href="/contact" class="transition duration-200 hover:text-[#E6B66A]">Contact</a>
+                <a href="/cart" aria-label="Shopping Cart" class="transition duration-200 hover:text-[#E6B66A]">
+                    <i class="fa-solid fa-cart-shopping mr-1"></i>
+                </a>
+                <% if (isAdmin) { %>
+                    <a href="/admin/orders" class="transition duration-200 hover:text-[#E6B66A]">
+                        <i class="fa-solid fa-box mr-1"></i>
+                    </a>
+                    <a href="/admin/logout" class="rounded-lg border border-white/30 px-4 py-2 transition hover:bg-white/10">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i>Admin Logout
+                    </a>
+                <% } else if (isUserLoggedIn) { %>
+                    <span class="text-[#E6B66A]">Hi, <%= currentUserName %></span>
+                    <form action="/logout" method="POST">
+                        <button type="submit" class="rounded-lg border border-white/30 px-4 py-2 transition hover:bg-white/10">Logout</button>
+                    </form>
+                <% } else { %>
+                    <a href="/login" class="transition duration-200 hover:text-[#E6B66A]"><i class="fa-solid fa-user mr-1"></i></a>
+                    <a href="/register" class="rounded-lg bg-[#C47A22] px-4 py-2 text-white transition hover:bg-[#A96519]">Create Account</a>
+                <% } %>
+            </div>
+            <button id="menuBtn" type="button" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 transition hover:bg-white/10 md:hidden" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileMenu">
+                <i id="menuIcon" class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+        <div id="mobileMenu" class="hidden border-t border-white/15 px-5 py-3 md:hidden">
+            <div class="mx-auto flex max-w-7xl flex-col gap-1 text-sm font-semibold">
+                <a href="/" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">Home</a>
+                <a href="/books" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">Books</a>
+                <a href="/category" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">Categories</a>
+                <a href="/about" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">About</a>
+                <a href="/contact" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">Contact</a>
+                <a href="/cart" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">
+                    <i class="fa-solid fa-cart-shopping mr-2"></i>Cart
+                </a>
+                <% if (isAdmin) { %>
+                    <a href="/admin/orders" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">
+                        <i class="fa-solid fa-box mr-2"></i>Manage Orders
+                    </a>
+                    <a href="/admin/logout" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">
+                        <i class="fa-solid fa-right-from-bracket mr-2"></i>Admin Logout
+                    </a>
+                <% } else if (isUserLoggedIn) { %>
+                    <div class="rounded-lg px-4 py-3 text-[#E6B66A]">
+                        <i class="fa-solid fa-user mr-2"></i>Hi, <%= currentUserName %>
+                    </div>
+                    <form action="/logout" method="POST" class="px-4 py-2">
+                        <button type="submit" class="w-full rounded-lg border border-white/30 px-4 py-3 text-left transition hover:bg-white/10">
+                            <i class="fa-solid fa-right-from-bracket mr-2"></i>Logout
+                        </button>
+                    </form>
+                <% } else { %>
+                    <a href="/login" class="rounded-lg px-4 py-3 transition hover:bg-white/10 hover:text-[#E6B66A]">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i>Login
+                    </a>
+                    <a href="/register" class="mt-1 rounded-lg bg-[#C47A22] px-4 py-3 text-center text-white transition hover:bg-[#A96519]">
+                        <i class="fa-solid fa-user-plus mr-2"></i>Create Account
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</nav>
+<script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon = document.getElementById('menuIcon');
+
+    menuBtn.addEventListener('click', () => {
+        const isHidden = mobileMenu.classList.toggle('hidden');
+        menuIcon.classList.toggle('fa-bars', isHidden);
+        menuIcon.classList.toggle('fa-xmark', !isHidden);
+        menuBtn.setAttribute('aria-expanded', String(!isHidden));
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            menuIcon.classList.remove('fa-xmark');
+            menuIcon.classList.add('fa-bars');
+            menuBtn.setAttribute('aria-expanded', 'false');
+        });
+    });
+</script>

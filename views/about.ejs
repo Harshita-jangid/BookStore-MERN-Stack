@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+  </head>
+  <body class="bg-[#F8F5EF] text-[#1F2937]">
+    <%- include('includes/nav.ejs') %>
+    <section class="px-5 py-16 md:py-24">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <p
+              class="text-[#C47A22] font-bold tracking-widest text-sm uppercase">Welcome to booksHeaven.
+            </p>
+            <h1
+              class="text-5xl md:text-6xl font-bold text-[#1E3A5F] leading-tight mt-4">
+              Stories That Stay With You.
+            </h1>
+            <p class="text-gray-600 text-lg leading-relaxed mt-6 max-w-xl">
+              A place where curious minds discover meaningful stories, useful
+              knowledge and books worth remembering.
+            </p>
+            <a
+              href="/books"
+              class="inline-block mt-8 bg-[#1E3A5F] hover:bg-[#162D49] text-white px-7 py-3 rounded-lg font-semibold transition"
+              >Explore Our Books →</a
+            >
+          </div>
+          <div class="relative">
+            <div class="bg-[#1E3A5F] rounded-[2rem] p-8 md:p-10 shadow-2xl">
+              <div class="border border-white/20 rounded-2xl p-8 text-center">
+                <p class="text-[#F59E0B] text-5xl font-serif">“</p>
+                <p
+                  class="text-white text-2xl md:text-3xl font-serif leading-relaxed mt-2"
+                >
+                  A good book is a journey you can take anywhere.
+                </p>
+                <div
+                  class="w-12 h-1 bg-[#F59E0B] mx-auto mt-7 rounded-full"
+                ></div>
+                <p class="text-blue-200 text-sm mt-4">READ • DISCOVER • GROW</p>
+              </div>
+            </div>
+            <div
+              class="absolute -bottom-5 -left-5 bg-[#F59E0B] text-white px-5 py-3 rounded-xl shadow-lg font-semibold"
+            >
+              Made for Readers
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-16 px-5">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-3 gap-8 items-center">
+          <div class="md:col-span-1">
+            <p class="text-[#C47A22] font-bold text-sm tracking-widest">
+              OUR STORY
+            </p>
+            <h2 class="text-3xl md:text-4xl font-bold text-[#1E3A5F] mt-3">
+              Built Around the Love of Reading
+            </h2>
+          </div>
+          <div class="md:col-span-2">
+            <p class="text-gray-600 leading-relaxed text-lg">
+              booksHeaven. is a modern online platform created to make
+              discovering books simple and enjoyable. Whether you love fiction,
+              programming, science, business or educational books, our
+              collection brings different interests together in one place.
+            </p>
+            <p class="text-gray-600 leading-relaxed text-lg mt-5">
+              We want every visit to help you discover something new—a story
+              that inspires you, an idea that teaches you or a book that becomes
+              your next favorite.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 px-5">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+          <p class="text-[#C47A22] font-bold text-sm tracking-widest">
+            WHAT WE OFFER
+          </p>
+          <h2 class="text-3xl md:text-4xl font-bold text-[#1E3A5F] mt-3">
+            More Than Just Books
+          </h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl p-8 border-t-4 border-[#1E3A5F] shadow-sm hover:shadow-xl transition">
+            <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center">
+              <i class="fa-solid fa-book-open text-2xl text-[#1E3A5F]"></i>
+            </div>
+            <h3 class="text-xl font-bold text-[#1E3A5F] mt-5">
+              Curated Collection
+            </h3>
+            <p class="text-gray-500 mt-3 leading-relaxed">
+              Explore books across multiple genres and categories, all in one
+              convenient place.
+            </p>
+          </div>
+          <div class="bg-white rounded-2xl p-8 border-t-4 border-[#F59E0B] shadow-sm hover:shadow-xl transition">
+            <div class="w-14 h-14 rounded-xl  bg-blue-50 flex items-center justify-center">
+              <i class="fa-solid fa-magnifying-glass text-2xl text-[#1E3A5F]"></i>
+            </div>
+            <h3 class="text-xl font-bold text-[#1E3A5F] mt-5">
+              Easy Discovery
+            </h3>
+            <p class="text-gray-500 mt-3 leading-relaxed">
+              Find books that match your interests through a simple and
+              user-friendly experience.
+            </p>
+          </div>
+          <div class="bg-white rounded-2xl p-8 border-t-4 border-[#C47A22] shadow-sm hover:shadow-xl transition">
+            <div class="w-14 h-14 rounded-xl  bg-blue-50 flex items-center justify-center">
+              <i class="fa-solid fa-users text-2xl text-[#1E3A5F]"></i>
+            </div>
+            <h3 class="text-xl font-bold text-[#1E3A5F] mt-5">
+              For Every Reader
+            </h3>
+            <p class="text-gray-500 mt-3 leading-relaxed">
+              From beginners to passionate readers, there is always something
+              new to explore.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#1E3A5F] py-16 px-5 text-white">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div>
+            <h3 class="text-3xl md:text-4xl font-bold text-[#F59E0B]">1000+</h3>
+            <p class="text-blue-200 mt-2">Books</p>
+          </div>
+          <div>
+            <h3 class="text-3xl md:text-4xl font-bold text-[#F59E0B]">50+</h3>
+            <p class="text-blue-200 mt-2">Categories</p>
+          </div>
+          <div>
+            <h3 class="text-3xl md:text-4xl font-bold text-[#F59E0B]">100%</h3>
+            <p class="text-blue-200 mt-2">Reader Focused</p>
+          </div>
+          <div>
+            <h3 class="text-3xl md:text-4xl font-bold text-[#F59E0B]">24/7</h3>
+            <p class="text-blue-200 mt-2">Explore Anytime</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 px-5">
+      <div
+        class="max-w-5xl mx-auto bg-[#E8DCC8] rounded-3xl p-10 md:p-14 text-center"
+      >
+        <p class="text-[#C47A22] font-bold tracking-widest text-sm">
+          YOUR NEXT CHAPTER
+        </p>
+        <h2 class="text-3xl md:text-4xl font-bold text-[#1E3A5F] mt-3">
+          Every Book Opens a New World
+        </h2>
+        <p class="text-gray-600 max-w-2xl mx-auto mt-4 leading-relaxed">
+          Take a moment, explore our collection and find a book that speaks to
+          you.
+        </p>
+        <a
+          href="/books"
+          class="inline-block mt-7 bg-[#1E3A5F] hover:bg-[#162D49] text-white px-8 py-3 rounded-lg font-semibold transition"
+          >Start Exploring →</a
+        >
+      </div>
+    </section>
+
+    <%- include('includes/footer.ejs') %>
+  </body>
+</html>

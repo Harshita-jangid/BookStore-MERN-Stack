@@ -1,0 +1,421 @@
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "1234";
+
+
+const express = require('express');
+const app = express()
+const port = 3000
+
+const mongoose = require('mongoose');
+const multer = require('multer');
+const nodemailer = require('nodemailer');
+const session = require('express-session');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+
+const upload = multer({ storage: storage });
+
+const transport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'harshitaverma2176@gmail.com',
+        pass: 'hrbrdhmoabeqbjxa'
+    }
+    
+});
+
+async function main() {
+    await mongoose.connect('mongodb+srv://Harshita:jTacD3GbaFrlajcf@cluster0.bde51ir.mongodb.net/bookstore');
+}
+main()
+.then(() => {console.log('Connected to MongoDB')})
+.catch(err => console.log(err));
+
+const bookSchema = new mongoose.Schema({
+    title: String,
+    author: String,
+
+    price: Number,
+    category: String,
+    image: String
+})
+
+
+app.use(session({
+    secret: 'bookstoresecret',
+    resave: false,
+    saveUninitialized: false,
+}))
+app.use(express.urlencoded({ extended: true }))
+
+function isAdmin(req, res, next) {
+    if(req.session.isAdmin) {
+        next();
+    } else {
+        res.send('Access Denied');
+    }
+}
+
+app.get('/admin/login', (req, res) => {
+    res.render('adminlogin.ejs');
+})
+app.post('/admin/login', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        req.session.isAdmin = true;
+        res.redirect('/books');
+    } else {
+        res.send("Invalid Username or Password");
+    }
+});
+app.get('/admin/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+})
+
+const Book = mongoose.model('Book', bookSchema);
+
+app.set("view engine", "ejs")
+app.use(express.static('public'))
+
+
+app.get('/', (req, res) => {
+    res.render('home.ejs')
+})
+
+app.get('/about', async (req, res) => {
+    try {
+        const featuredBooks = await Book.find().limit(6);
+        res.render('about', { featuredBooks });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Unable to load books');
+    }
+});
+app.get('/books', async (req, res) => {
+    const books = await Book.find();
+    res.render('books.ejs', { books, isAdmin: req.session.isAdmin});
+})
+
+app.get('/books/new', isAdmin, (req, res) => {
+    res.render('newbook');
+});
+
+app.post('/books', isAdmin, upload.single('img'), async (req, res) => {
+    const book = new Book({
+        title: req.body.title,
+        author: req.body.author,
+        price: req.body.price,
+        category: req.body.category,
+        image: '/uploads/' + req.file.filename
+    });
+
+    await book.save();
+    res.redirect('/books');
+});
+
+app.post('/books/delete/:id', isAdmin, async (req, res) => {
+    const id = req.params.id;
+    await Book.findByIdAndDelete(id);
+    res.redirect('/books');
+});
+
+app.get('/books/edit/:id',isAdmin, async (req, res) => {
+    const Id = req.params.id;
+    const book = await Book.findById(Id);
+    res.render('editbook', { book });
+});
+app.post('/books/edit/:id', isAdmin, upload.single('img'), async (req, res) => {
+    const book = await Book.findById(req.params.id);
+
+    if (req.body.title) book.title = req.body.title;
+    if (req.body.author) book.author = req.body.author;
+    if (req.body.price) book.price = req.body.price;
+    if (req.body.category) book.category = req.body.category;
+
+    if (req.file) {
+        book.image = '/uploads/' + req.file.filename;
+    }
+
+    await book.save();
+    res.redirect('/books');
+});
+
+app.get('/categories', async (req, res) => {
+    const books = await Book.find();
+    const categories = [...new Set(books.map(book => book.category))];
+    res.render('categories.ejs', { books, categories });
+});
+
+app.get('/categories/:category', async (req, res) => {
+    const category = req.params.category;
+    const books = await Book.find({ category: category });
+
+    const allBooks = await Book.find();
+    const categories = [...new Set(allBooks.map(book => book.category))];
+    res.render('categories.ejs', { books, categories });
+});
+
+
+app.get('/contact',(req, res) => {
+    res.render('contact.ejs')
+})
+
+app.post('/contact', (req, res) => {
+    const name = req.body.name;
+    const email = req.body.email;
+    const mobile = req.body.mobile;
+    const message = req.body.message;
+
+    transport.sendMail({
+        from: 'harshitaverma2176@gmail.com',
+        to: 'harshitaverma2176@gmail.com',
+        subject: "new message",
+        text: `Name: ${name} Email: ${email} Mobile: ${mobile} Message: ${message}`
+    }, (error) => {
+        if (error) {
+            console.log(error)
+            res.send("Email Not Sent")
+        }else{
+            res.send(`<script>
+                alert("Message sent successfully");
+                window.location.href("/contact");
+            </script>`)
+        }
+    });
+
+    
+});
+app.get('/cart', (req, res) => {
+    res.render('cart', {
+        cart: req.session.cart || []
+    });
+});
+app.post('/cart/remove/:id', (req, res) => {
+    if (req.session.cart) {
+        req.session.cart = req.session.cart.filter(
+            item => item.bookId !== req.params.id
+        );
+    }
+
+    res.redirect('/cart');
+});
+app.get('/checkout', (req, res) => {
+    const cart = req.session.cart || [];
+
+    if (cart.length === 0) {
+        return res.redirect('/cart');
+    }
+
+    const total = cart.reduce((sum, item) => {
+        return sum +
+            (Number(item.price) || 0) *
+            (Number(item.quantity) || 1);
+    }, 0);
+
+    res.render('checkout.ejs', {
+        cart,
+        total,
+        error: null,
+        formData: {},
+        currentUserName: ''
+    });
+});
+app.post('/checkout', async (req, res) => {
+    const cart = req.session.cart || [];
+    const formData = req.body;
+
+    const renderCheckout = (message, status = 400) => {
+        const total = cart.reduce((sum, item) => {
+            return sum +
+                (Number(item.price) || 0) *
+                (Number(item.quantity) || 1);
+        }, 0);
+
+        return res.status(status).render('checkout.ejs', {
+            cart,
+            total,
+            error: message,
+            formData,
+            currentUserName: ''
+        });
+    };
+
+    try {
+        if (cart.length === 0) {
+            return res.redirect('/cart');
+        }
+
+        const {
+            fullName,
+            email,
+            phone,
+            address,
+            city,
+            state,
+            pincode,
+            paymentMethod
+        } = req.body;
+
+        if (
+            !fullName?.trim() ||
+            !email?.trim() ||
+            !phone?.trim() ||
+            !address?.trim() ||
+            !city?.trim() ||
+            !state?.trim() ||
+            !pincode?.trim()
+        ) {
+            return renderCheckout('Please fill in all required details.');
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            return renderCheckout('Please enter a valid email address.');
+        }
+
+        if (!/^[6-9]\d{9}$/.test(phone.trim())) {
+            return renderCheckout('Please enter a valid 10-digit mobile number.');
+        }
+
+        if (!/^[1-9]\d{5}$/.test(pincode.trim())) {
+            return renderCheckout('Please enter a valid 6-digit PIN code.');
+        }
+
+        if (paymentMethod !== 'Cash on Delivery') {
+            return renderCheckout('Please select a valid payment method.');
+        }
+
+        const totalAmount = cart.reduce((sum, item) => {
+            return sum +
+                (Number(item.price) || 0) *
+                (Number(item.quantity) || 1);
+        }, 0);
+
+        const totalBooks = cart.reduce((sum, item) => {
+            return sum + Number(item.quantity || 1);
+        }, 0);
+
+        const orderDetails = cart.map((item, index) => {
+            const quantity = Number(item.quantity) || 1;
+            const price = Number(item.price) || 0;
+
+            return `${index + 1}. ${item.title}
+Quantity: ${quantity}
+Price per book: Rs. ${price.toFixed(2)}
+Subtotal: Rs. ${(price * quantity).toFixed(2)}`;
+        }).join('\n\n');
+
+        const mailText = `
+NEW BOOK ORDER
+
+CUSTOMER DETAILS
+Name: ${fullName.trim()}
+Email: ${email.trim()}
+Mobile: ${phone.trim()}
+
+DELIVERY ADDRESS
+${address.trim()}
+${city.trim()}, ${state.trim()}
+PIN Code: ${pincode.trim()}
+
+ORDER DETAILS
+${orderDetails}
+
+Total Books: ${totalBooks}
+Shipping: Free
+Grand Total: Rs. ${totalAmount.toFixed(2)}
+
+Payment Method: Cash on Delivery
+`;
+        await transport.sendMail({
+            from: 'harshitaverma2176@gmail.com',
+            to: 'harshitaverma2176@gmail.com',
+            replyTo: email.trim(),
+            subject: 'New Book Order - The Book Store',
+            text: mailText
+        });
+
+        const order = {
+            fullName: fullName.trim(),
+            email: email.trim(),
+            phone: phone.trim(),
+            address: address.trim(),
+            city: city.trim(),
+            state: state.trim(),
+            pincode: pincode.trim(),
+            paymentMethod: 'Cash on Delivery',
+
+            items: cart.map(item => ({
+                title: item.title,
+                price: Number(item.price) || 0,
+                quantity: Number(item.quantity) || 1,
+                image: item.image
+            })),
+
+            totalBooks,
+            totalAmount
+        };
+        req.session.cart = [];
+
+        return res.render('order-success.ejs', { order });
+
+    } catch (err) {
+        console.error('Checkout error:', err);
+
+        return renderCheckout(
+            'We could not process your order. Please check your connection and try again.',
+            500
+        );
+    }
+});
+
+
+app.post('/cart/add/:id', async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+
+        if (!book) {
+            return res.status(404).send('Book not found');
+        }
+
+        if (!req.session.cart) {
+            req.session.cart = [];
+        }
+
+        const existingBook = req.session.cart.find(
+            item => item.bookId === book._id.toString()
+        );
+
+        if (existingBook) {
+            existingBook.quantity += 1;
+        } else {
+            req.session.cart.push({
+                bookId: book._id.toString(),
+                title: book.title,
+                price: book.price,
+                image: book.image,
+                quantity: 1
+            });
+        }
+
+        res.redirect('/cart');
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Unable to add book to cart');
+    }
+});
+
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})

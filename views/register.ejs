@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Create Account | booksHeaven</title>
+</head>
+<body class="min-h-screen bg-[#F8F5EF] flex items-center justify-center p-5">
+    <div class="w-full max-w-md bg-white border border-[#E5E0D8] rounded-2xl p-7 sm:p-9 shadow-sm">
+        <a href="/" class="text-2xl font-bold text-[#1E3A5F]">booksHeaven<span class="text-[#C47A22]">.</span></a>
+        <h1 class="text-2xl font-bold text-[#1E3A5F] mt-7">Create Account</h1>
+        <p class="text-sm text-gray-500 mt-2 mb-6">Create your account and discover your next favorite book.</p>
+
+        <% if (error) { %>
+            <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3 mb-4"><%= error %></div>
+        <% } %>
+
+        <form action="/register" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-[#1E3A5F] mb-2">Full Name</label>
+                <input type="text" name="Name" required maxlength="100" autocomplete="name" placeholder="Enter your name" class="w-full border border-[#D6D0C6] rounded-lg px-4 py-3 outline-none focus:border-[#1E3A5F]">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-[#1E3A5F] mb-2">Email Address</label>
+                <input type="email" name="Email" required maxlength="254" autocomplete="email" placeholder="Enter your email" class="w-full border border-[#D6D0C6] rounded-lg px-4 py-3 outline-none focus:border-[#1E3A5F]">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-[#1E3A5F] mb-2">Password</label>
+                <input type="password" name="Password" required minlength="8" autocomplete="new-password" placeholder="Minimum 8 characters" class="w-full border border-[#D6D0C6] rounded-lg px-4 py-3 outline-none focus:border-[#1E3A5F]">
+            </div>
+            <button type="submit" class="w-full bg-[#1E3A5F] hover:bg-[#162E4A] text-white font-semibold rounded-lg py-3 transition">Create Account</button>
+        </form>
+
+        <p class="text-center text-sm text-gray-600 mt-6">Already have an account? <a href="/login" class="text-[#C47A22] font-semibold hover:underline">Login</a></p>
+        <a href="/" class="block text-center text-sm text-gray-500 mt-4">Back to Home</a>
+    </div>
+</body>
+</html>

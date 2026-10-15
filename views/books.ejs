@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books - BookStore</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+</head>
+<body class="bg-[#F8F5EF] text-[#1F2937]">
+    <%- include('includes/nav.ejs') %>
+    <section class="px-5 sm:px-8 lg:px-16 py-7">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between  gap-3 border-b border-[#DCD6CB] pb-7 mb-8">
+                <div>
+                    <p class="text-[#C47A22] text-xs font-semibold tracking-widest uppercase">Book Collection</p>
+                    <h1 class="text-3xl font-bold text-[#1E3A5F] mt-2">Our Books</h1>
+                    <p class="text-gray-500 text-sm mt-2">Explore our collection and find your next great read.</p>
+                </div>
+                <div class="flex flex-col sm:flex-row  gap-3 w-full sm:w-auto">
+                <div class="relative w-full sm:w-100 ">
+                <input type="text" id="bookSearch" placeholder="Search books, authors..." class="w-full border border-[#DCD6CB] bg-white rounded-lg pl-10 pr-4 py-2.5 text-sm outline-none focus:border-[#1E3A5F] focus:ring-2 focus:ring-[#1E3A5F]/10 transition">
+                <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" stroke-width="2"></circle>
+                <path d="m16 16 4 4" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+                <p id="searchResult" class="text-xs text-gray-500 mt-2 hidden"></p>
+                </div>
+                
+                <div class="flex gap-3">
+                <% if(isAdmin) { %>
+                <a href="/books/new" class="inline-flex  justify-center bg-[#1E3A5F] hover:bg-[#162D49] text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">+ Add New Book</a>
+                <a href="/admin/logout" class="inline-flex items-center justify-center bg-[#1E3A5F] hover:bg-[#162D49] text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">Log Out</a>
+                <% } %>
+                </div>
+                </div>
+            </div>
+            <% if (books.length > 0) { %>
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <% books.forEach(book => { %>
+                        <div class=" book-card group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">
+                            <!-- Book Image -->
+                            <div class="relative bg-[#F0ECE4] overflow-hidden">
+                                <% if (book.img) { %>
+                                    <img
+                                        src="<%= book.img.startsWith('/uploads/') ? book.img : '/uploads/' + book.img %>"
+                                        alt="<%= book.Name %>"
+                                        loading="lazy"
+                                        class="w-full h-56 object-contain p-4 group-hover:scale-105 transition duration-500"
+                                    >
+                                <% } else { %>
+                                    <div class="w-full h-56 flex flex-col items-center justify-center text-[#1E3A5F]">
+                                        <i class="fa-solid fa-book-open text-5xl mb-3"></i>
+                                        <span class="text-sm font-semibold">Book Cover</span>
+                                    </div>
+                                <% } %>
+                                <% if (book.Category) { %>
+                                    <span class="absolute top-3 left-3 bg-white text-[#1E3A5F] px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+                                        <%= book.Category %>
+                                    </span>
+                                <% } %>
+                            </div>
+                            <!-- Book Details -->
+                            <div class="p-5">
+                                <h3 class="text-lg font-semibold text-[#1E3A5F] mb-2 line-clamp-2">
+                                    <%= book.Name %>
+                                </h3>
+                                <p class="text-sm text-gray-500 mb-4">
+                                    <i class="fa-solid fa-user-pen mr-2 text-[#C47A22]"></i>
+                                    <%= book.Author || 'Unknown Author' %>
+                                </p>
+                                <div class="flex items-center justify-between gap-3 pt-4 border-t border-gray-100">
+                                    <p class="text-xl font-bold text-[#1E3A5F]">
+                                        ₹<%= book.Price %>
+                                    </p>
+
+                                <div class="flex items-center gap-2">
+                                    <a href="/books/<%= book._id %>" class="inline-flex items-center gap-2 font-semibold text-[#1E3A5F] transition hover:text-[#C47A22]">
+                                      View<i class="fa-solid fa-arrow-right"></i></a>
+                                  <form action="/cart/add/<%= book._id %>" method="POST">
+                                    <button
+                                        type="submit"
+                                        class="w-10 h-10 shrink-0 rounded-xl bg-[#1E3A5F] text-white flex items-center justify-center hover:bg-[#C47A22] transition duration-300"
+                                        aria-label="Explore books">
+                                     <i class="fa-solid fa-cart-shopping"></i>
+                                    </button>
+                                </form>  
+                                 <% if(isAdmin) { %>
+                                <form action="/books/delete/<%= book._id %>" method="POST">
+                                    <button type="submit"
+                                     class="w-10 h-10 shrink-0 rounded-xl bg-[#1E3A5F] text-white flex items-center justify-center hover:bg-[#C47A22] transition duration-300"
+                                        aria-label="Explore books">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                                 <form action="/books/edit/<%= book._id %>">
+                                    <button type="submit"
+                                            class="w-10 h-10 shrink-0 rounded-xl bg-[#1E3A5F] text-white flex items-center justify-center hover:bg-[#C47A22] transition duration-300"
+                                            aria-label="Explore books">
+                                        <i class="fa-solid fa-edit"></i>
+                                    </button>
+                                </form>
+                                <% } %>
+                            </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="bg-white rounded-2xl border border-gray-100 p-10 sm:p-14 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-[#F8F5EF] text-[#1E3A5F] flex items-center justify-center text-2xl mx-auto mb-5">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#1E3A5F] mb-3">
+                        Your Next Read Awaits
+                    </h3>
+                    <p class="text-gray-600 mb-6">
+                        Our book collection will appear here once books are available.
+                    </p>
+                    <a
+                        href="/books"
+                        class="inline-flex items-center gap-2 bg-[#1E3A5F] hover:bg-[#162E4A] text-white px-6 py-3 rounded-xl font-semibold transition duration-300"
+                    >
+                        Explore Books
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <% if(isAdmin) { %>
+                <div class="bg-white border border-[#E3DED5] rounded-xl text-center py-16">
+                    <div class="text-4xl"><i class="fa-solid fa-book text-4xl text-[#1E3A5F]"></i></div>
+                    <h2 class="text-2xl font-semibold text-[#1E3A5F] mt-4">No Books Available</h2>
+                    <p class="text-gray-500 mt-2">Add your first book to start your collection.</p>
+                    <a href="/books/new" class="inline-block mt-5 bg-[#1E3A5F] text-white px-5 py-3 rounded-lg font-semibold hover:bg-[#162D49] transition">
+                        Add New Book
+                    </a>
+                </div>
+            <% } %>
+
+            <% } %>
+        </div>
+    </section>
+    <section class="bg-white border-y border-[#E5E0D8] py-12 px-5">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-9">
+            <span class="inline-block bg-[#F8F5EF] text-[#C47A22] text-xs font-semibold px-4 py-2 rounded-full mb-3">
+                Why booksHeaven?
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-[#1E3A5F]">
+                A Better Way to Discover Books
+            </h2>
+            <p class="text-[#6B7280] text-sm sm:text-base mt-3 max-w-2xl mx-auto">
+                Find your next favorite book with a simple and enjoyable browsing experience.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-[#F8F5EF] border border-[#E5E0D8] rounded-xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-white text-[#1E3A5F] flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <h3 class="font-semibold text-[#1E3A5F] mb-2">Wide Collection</h3>
+                <p class="text-sm text-[#6B7280] leading-6">
+                    Explore books across different genres and discover something new.
+                </p>
+            </div>
+
+            <div class="bg-[#F8F5EF] border border-[#E5E0D8] rounded-xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-white text-[#1E3A5F] flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <h3 class="font-semibold text-[#1E3A5F] mb-2">Easy Discovery</h3>
+                <p class="text-sm text-[#6B7280] leading-6">
+                    Browse categories and find books that match your interests.
+                </p>
+            </div>
+
+            <div class="bg-[#F8F5EF] border border-[#E5E0D8] rounded-xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-white text-[#1E3A5F] flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+                <h3 class="font-semibold text-[#1E3A5F] mb-2">Simple Pricing</h3>
+                <p class="text-sm text-[#6B7280] leading-6">
+                    Check book prices easily and choose according to your budget.
+                </p>
+            </div>
+
+            <div class="bg-[#F8F5EF] border border-[#E5E0D8] rounded-xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-white text-[#1E3A5F] flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <h3 class="font-semibold text-[#1E3A5F] mb-2">Reader Friendly</h3>
+                <p class="text-sm text-[#6B7280] leading-6">
+                    Enjoy a clean and comfortable experience while exploring books.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="px-5 py-12 sm:py-14">
+    <div class="max-w-6xl mx-auto bg-white border border-[#E5E0D8] rounded-2xl p-7 sm:p-10 text-center">
+        <span class="inline-block bg-[#F8F5EF] text-[#C47A22] text-xs font-semibold px-4 py-2 rounded-full mb-4">
+            Your Next Read Awaits
+        </span>
+
+        <h2 class="text-2xl sm:text-3xl font-bold text-[#1E3A5F]">
+            Every Book Has a Story to Tell
+        </h2>
+
+        <p class="text-sm sm:text-base text-[#6B7280] leading-7 max-w-2xl mx-auto mt-4">
+            From inspiring stories to useful knowledge, discover books that spark your curiosity and make every reading moment worthwhile.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mt-7">
+            <a href="/books" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#1E3A5F] hover:bg-[#162E4A] text-white px-6 py-3 rounded-lg text-sm font-semibold transition duration-300">
+                Explore Books
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <a href="/category" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-[#D6D0C6] hover:border-[#1E3A5F] text-[#1E3A5F] px-6 py-3 rounded-lg text-sm font-semibold transition duration-300">
+                Browse Categories
+            </a>
+        </div>
+    </div>
+</section>
+    <%- include('includes/footer.ejs') %>
+</body>
+<script>
+    const searchInput = document.getElementById('bookSearch');
+    const clearButton = document.getElementById('clearSearch');
+    const searchResult = document.getElementById('searchResult');
+    const bookCards = document.querySelectorAll('.book-card');
+    function liveSearch() {
+        const query = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+        bookCards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const matched = text.includes(query);
+            card.classList.toggle('hidden', !matched);
+            if (matched) {
+                visibleCount++;
+            }
+        });
+        clearButton.classList.toggle('hidden', query.length === 0);
+        searchResult.classList.toggle('hidden', query.length === 0);
+        if (query.length > 0) {
+            searchResult.textContent = visibleCount > 0
+                ? `${visibleCount} matching book(s) found`
+                : 'No matching books found';
+        }
+    }
+    searchInput.addEventListener('input', liveSearch);
+    clearButton.addEventListener('click', () => {
+        searchInput.value = '';
+        liveSearch();
+        searchInput.focus();
+    });
+</script>
+</html>

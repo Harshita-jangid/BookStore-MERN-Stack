@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - BookStore</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body class="bg-[#F8F5EF] text-[#1F2937]">
+    <%- include('includes/nav.ejs') %>
+
+    <section class="px-5 sm:px-8 lg:px-16 py-7">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-8 border-b border-[#DCD6CB] pb-7">
+                <p class="text-[#C47A22] text-xs font-semibold tracking-widest uppercase">Book Collection</p>
+                <h1 class="text-3xl font-bold text-[#1E3A5F] mt-2">Explore Categories</h1>
+                <p class="text-gray-500 text-sm mt-2">Discover books from your favorite categories and find your next great read.</p>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mb-10">
+                <a href="/category" class="border border-[#1E3A5F] text-white bg-[#1E3A5F] text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#162D49] transition">All</a>
+
+                <% categories.forEach(category => { %>
+                    <a href="/category/<%= encodeURIComponent(category) %>" class="border border-[#DCD6CB] bg-white text-gray-600 text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#1E3A5F] hover:text-white hover:border-[#1E3A5F] hover:-translate-y-0.5 transition duration-300">
+                        <%= category %>
+                    </a>
+                <% }) %>
+            </div>
+
+            <% if (books.length > 0) { %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <% books.forEach(book => { %>
+                        <div class="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">
+                            <div class="relative bg-[#F0ECE4] overflow-hidden">
+                                <% if (book.img) { %>
+                                    <img
+                                        src="<%= book.img.startsWith('/uploads/') ? book.img : '/uploads/' + book.img %>"
+                                        alt="<%= book.Name %>"
+                                        loading="lazy"
+                                        class="w-full h-56 object-contain p-4 group-hover:scale-105 transition duration-500"
+                                    >
+                                <% } else { %>
+                                    <div class="w-full h-56 flex flex-col items-center justify-center text-[#1E3A5F]">
+                                        <i class="fa-solid fa-book-open text-5xl mb-3"></i>
+                                        <span class="text-sm font-semibold">Book Cover</span>
+                                    </div>
+                                <% } %>
+
+                                <% if (book.Category) { %>
+                                    <span class="absolute top-3 left-3 bg-white text-[#1E3A5F] px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+                                        <%= book.Category %>
+                                    </span>
+                                <% } %>
+                            </div>
+
+                            <div class="p-5">
+                                <h3 class="text-lg font-semibold text-[#1E3A5F] mb-2 line-clamp-2">
+                                    <%= book.Name %>
+                                </h3>
+
+                                <p class="text-sm text-gray-500 mb-4">
+                                    <i class="fa-solid fa-user-pen mr-2 text-[#C47A22]"></i>
+                                    <%= book.Author || 'Unknown Author' %>
+                                </p>
+
+                                <div class="flex items-center justify-between gap-3 pt-4 border-t border-gray-100">
+                                    <p class="text-xl font-bold text-[#1E3A5F]">
+                                        ₹<%= book.Price %>
+                                    </p>
+                                    <div class="flex items-center gap-2">
+                                    <a href="/books/<%= book._id %>" class="inline-flex items-center gap-2 font-semibold text-[#1E3A5F] transition hover:text-[#C47A22]">
+                                      View<i class="fa-solid fa-arrow-right"></i></a>
+                                    <form action="/cart/add/<%= book._id %>" method="POST">
+                                    <button
+                                        type="submit"
+                                        class="w-10 h-10 shrink-0 rounded-xl bg-[#1E3A5F] text-white flex items-center justify-center hover:bg-[#C47A22] transition duration-300"
+                                        aria-label="Explore books">
+                                     <i class="fa-solid fa-cart-shopping"></i>
+                                    </button>
+                                </form>  
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="bg-white rounded-2xl border border-[#E3DED5] p-10 sm:p-14 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-[#F8F5EF] text-[#1E3A5F] flex items-center justify-center text-2xl mx-auto mb-5">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#1E3A5F] mb-3">No Books Found</h3>
+                    <p class="text-gray-500 mb-6">There are no books available in this category right now.</p>
+                    <a href="/category" class="inline-flex items-center gap-2 bg-[#1E3A5F] hover:bg-[#162D49] text-white px-6 py-3 rounded-xl font-semibold transition duration-300">
+                        Explore All Books
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </section>
+
+    <section class="bg-white border-y border-[#E5E0D8] py-14 px-5 sm:px-8 mt-16">
+        
+        <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-9">
+             <p class="text-[#C47A22] text-xs font-semibold tracking-widest uppercase">Why booksHeaven?</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-[#1E3A5F] mt-3">Your Perfect Reading Companion</h2>
+            <p class="text-gray-500 text-sm mt-3 max-w-2xl mx-auto">Discover a better way to explore books, find new interests and enjoy every reading moment.</p>
+       
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-[#F8F5EF] border border-[#E5E0D8] rounded-xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-white text-[#1E3A5F] flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <h3 class="font-semibold text-[#1E3A5F] mb-2">Wide Collection</h3>
+                <p class="text-sm text-[#6B7280] leading-6">
+                    Explore books across different genres and discover something new.
+                </p>
+            </div>
+
+            <div class="bg-[#F8F5EF] border border-[#E5E0D8] rounded-xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-white text-[#1E3A5F] flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <h3 class="font-semibold text-[#1E3A5F] mb-2">Easy Discovery</h3>
+                <p class="text-sm text-[#6B7280] leading-6">
+                    Browse categories and find books that match your interests.
+                </p>
+            </div>
+
+            <div class="bg-[#F8F5EF] border border-[#E5E0D8] rounded-xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-white text-[#1E3A5F] flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-tag"></i>
+                </div>
+                <h3 class="font-semibold text-[#1E3A5F] mb-2">Simple Pricing</h3>
+                <p class="text-sm text-[#6B7280] leading-6">
+                    Check book prices easily and choose according to your budget.
+                </p>
+            </div>
+
+            <div class="bg-[#F8F5EF] border border-[#E5E0D8] rounded-xl p-6 text-center transition duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-white text-[#1E3A5F] flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <h3 class="font-semibold text-[#1E3A5F] mb-2">Reader Friendly</h3>
+                <p class="text-sm text-[#6B7280] leading-6">
+                    Enjoy a clean and comfortable experience while exploring books.
+                </p>
+            </div>
+        </div>
+    </div> 
+
+        
+</section>
+
+<section class="px-5 sm:px-8 py-16">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+        <div class="py-4">
+            <p class="text-[#C47A22] text-xs font-semibold tracking-widest uppercase">A Little Inspiration</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-[#1E3A5F] mt-4 leading-tight">Every Book Opens a Door to a New World.</h2>
+            <p class="text-gray-500 leading-7 mt-5">Whether you want to learn a new skill, explore an imaginative story or discover a fresh perspective, your next favorite book could be waiting right here.</p>
+            <a href="/books" class="inline-flex items-center gap-2 mt-6 bg-[#1E3A5F] hover:bg-[#162D49] text-white px-6 py-3 rounded-xl text-sm font-semibold transition duration-300">
+                Discover All Books
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="relative overflow-hidden rounded-3xl bg-[#1E3A5F] p-8 sm:p-12 min-h-64 flex flex-col justify-center">
+            <div class="absolute -right-8 -top-10 w-40 h-40 rounded-full border-[25px] border-white/5"></div>
+            <div class="absolute -right-2 -bottom-16 w-48 h-48 rounded-full border-[30px] border-[#F59E0B]/10"></div>
+            <i class="fa-solid fa-quote-left text-4xl text-[#F59E0B]"></i>
+            <p class="text-xl sm:text-2xl font-semibold text-white leading-relaxed mt-6 relative">A reader lives a thousand lives before he dies.</p>
+            <p class="text-blue-200 text-sm mt-4">— George R. R. Martin</p>
+            <div class="flex gap-2 mt-8">
+                <span class="w-8 h-1 rounded-full bg-[#F59E0B]"></span>
+                <span class="w-3 h-1 rounded-full bg-white/30"></span>
+                <span class="w-3 h-1 rounded-full bg-white/30"></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="px-5 sm:px-8 pb-16">
+    <div class="max-w-7xl mx-auto bg-[#F0ECE4] border border-[#E3DED5] rounded-3xl p-8 sm:p-12 text-center">
+        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mx-auto text-[#C47A22] text-2xl shadow-sm">
+            <i class="fa-solid fa-book-bookmark"></i>
+        </div>
+        <p class="text-[#C47A22] text-xs font-semibold tracking-widest uppercase mt-6">Your Next Chapter Starts Here</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-[#1E3A5F] mt-3">Find a Book That Speaks to You</h2>
+        <p class="text-gray-500 text-sm leading-6 max-w-xl mx-auto mt-3">Browse our collection, explore different categories and make room for your next great read.</p>
+        <div class="flex flex-col sm:flex-row justify-center gap-3 mt-7">
+            <a href="/books" class="inline-flex items-center justify-center gap-2 bg-[#1E3A5F] hover:bg-[#162D49] text-white px-6 py-3 rounded-xl text-sm font-semibold transition duration-300">
+                Browse All Books
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-white border border-[#DCD6CB] hover:border-[#1E3A5F] text-[#1E3A5F] px-6 py-3 rounded-xl text-sm font-semibold transition duration-300">
+                <i class="fa-regular fa-envelope"></i>
+                Contact Us
+            </a>
+        </div>
+    </div>
+</section>
+
+    <%- include('includes/footer.ejs') %>
+</body>
+</html>
